@@ -3,10 +3,9 @@
 // Global state
 let data = [];
 let isPlaying = false;
-let speed = 500; // milliseconds
+let speed = 500; // milliseconds per step
 let i = 0;
 let j = 0;
-let timer = null; // timeout id for autoplay
 
 const svgHeight = 300;
 let svg;
@@ -17,10 +16,13 @@ const wait = ms => new Promise(res => setTimeout(res, ms));
 // Generate random array and draw bars
 function init() {
   data = Array.from({ length: 30 }, () => Math.floor(Math.random() * 91) + 10);
-  i = 0; j = 0; isPlaying = false;
+  i = 0;
+  j = 0;
+  isPlaying = false;
 
   d3.select('#chart').selectAll('*').remove();
-  svg = d3.select('#chart').append('svg')
+  svg = d3.select('#chart')
+    .append('svg')
     .attr('viewBox', `0 0 ${data.length * 20} ${svgHeight}`);
 
   drawBars();
@@ -32,33 +34,35 @@ function drawBars() {
   svg.selectAll('rect')
     .data(data)
     .join('rect')
-    .attr('x', (d, idx) => idx * barWidth)
-    .attr('y', d => svgHeight - d * 3)
-    .attr('width', barWidth - 2)
-    .attr('height', d => d * 3)
-    .attr('fill', 'rgb(168 219 168)'); // sage-green
+      .attr('x',     (d, idx) => idx * barWidth)
+      .attr('y',     d        => svgHeight - d * 3)
+      .attr('width', barWidth - 2)
+      .attr('height',d        => d * 3)
+      .attr('fill',  'rgb(168 219 168)'); // sage-green
 }
 
 // Single bubble sort step
 async function bubbleSortStep() {
-  if (i >= data.length - 1) return; // already sorted
+  // If fully sorted, do nothing
+  if (i >= data.length - 1) return;
 
-  // Highlight compared bars
+  // Highlight the two we're comparing
   const bars = svg.selectAll('rect').nodes();
   d3.select(bars[j]).attr('fill', 'orange');
   d3.select(bars[j + 1]).attr('fill', 'orange');
   await wait(speed);
 
+  // Swap if out of order and redraw
   if (data[j] > data[j + 1]) {
-    // Swap values
     [data[j], data[j + 1]] = [data[j + 1], data[j]];
     drawBars();
   }
 
-  // Reset colors
+  // Reset their color
   d3.select(bars[j]).attr('fill', 'rgb(168 219 168)');
   d3.select(bars[j + 1]).attr('fill', 'rgb(168 219 168)');
 
+  // Advance indices for the next comparison
   j++;
   if (j >= data.length - i - 1) {
     j = 0;
@@ -66,25 +70,22 @@ async function bubbleSortStep() {
   }
 }
 
-// Autoplay loop using recursive timeouts
-function autoStep() {
-  timer = setTimeout(async () => {
-    if (!isPlaying || i >= data.length - 1) {
-      isPlaying = false;
-      clearTimeout(timer);
-      timer = null;
-      return;
-    }
+// Play/pause loop
+async function play() {
+  if (isPlaying) return;
+  isPlaying = true;
+  while (isPlaying && i < data.length - 1) {
     await bubbleSortStep();
-    autoStep();
-  }, 0);
+    await wait(speed);
+  }
+  isPlaying = false;
 }
 
-// Control handlers
+// Hook up controls once DOM is ready
 window.addEventListener('DOMContentLoaded', () => {
-  const playBtn = document.getElementById('play');
-  const nextBtn = document.getElementById('next');
-  const resetBtn = document.getElementById('reset');
+  const playBtn     = document.getElementById('play');
+  const nextBtn     = document.getElementById('next');
+  const resetBtn    = document.getElementById('reset');
   const speedSlider = document.getElementById('speed');
 
   playBtn.addEventListener('click', () => {
@@ -92,9 +93,8 @@ window.addEventListener('DOMContentLoaded', () => {
       isPlaying = false;
       playBtn.textContent = 'Play';
     } else {
-      isPlaying = true;
       playBtn.textContent = 'Pause';
-      autoStep();
+      play();
     }
   });
 
@@ -109,10 +109,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   speedSlider.addEventListener('input', e => {
     speed = +e.target.value;
-    if (isPlaying) {
-      clearTimeout(timer);
-      autoStep();
-    }
   });
 
   init();
