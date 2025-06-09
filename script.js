@@ -58,6 +58,7 @@ async function bubbleSortStep() {
   d3.select(bars[j]).attr('fill', 'rgb(168 219 168)');
   d3.select(bars[j + 1]).attr('fill', 'rgb(168 219 168)');
 
+  // Advance indices
   j++;
   if (j >= data.length - i - 1) {
     j = 0;
@@ -78,9 +79,9 @@ async function play() {
 
 // Control handlers
 window.addEventListener('DOMContentLoaded', () => {
-  const playBtn = document.getElementById('play');
-  const nextBtn = document.getElementById('next');
-  const resetBtn = document.getElementById('reset');
+  const playBtn    = document.getElementById('play');
+  const nextBtn    = document.getElementById('next');
+  const resetBtn   = document.getElementById('reset');
   const speedSlider = document.getElementById('speed');
 
   playBtn.addEventListener('click', () => {
