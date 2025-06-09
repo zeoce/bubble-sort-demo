@@ -3,17 +3,17 @@
 // Global state
 let data = [];
 let isPlaying = false;
-let speed = 500; // milliseconds per step
+let speed = 500; // delay in ms between steps
 let i = 0;
 let j = 0;
 
 const svgHeight = 300;
 let svg;
 
-// Utility to wait for a given time
+// Utility: wait for a given time
 const wait = ms => new Promise(res => setTimeout(res, ms));
 
-// Generate random array and draw bars
+// Initialize data and SVG
 function init() {
   data = Array.from({ length: 30 }, () => Math.floor(Math.random() * 91) + 10);
   i = 0;
@@ -28,8 +28,8 @@ function init() {
   drawBars();
 }
 
-// Draw the bars based on current data
-function drawBars() {
+// Draw bars
+default function drawBars() {
   const barWidth = 20;
   svg.selectAll('rect')
     .data(data)
@@ -38,31 +38,26 @@ function drawBars() {
       .attr('y',     d        => svgHeight - d * 3)
       .attr('width', barWidth - 2)
       .attr('height',d        => d * 3)
-      .attr('fill',  'rgb(168 219 168)'); // sage-green
+      .attr('fill',  'rgb(168 219 168)');
 }
 
-// Single bubble sort step
+// Perform one bubble sort step
 async function bubbleSortStep() {
-  // If fully sorted, do nothing
   if (i >= data.length - 1) return;
 
-  // Highlight the two we're comparing
   const bars = svg.selectAll('rect').nodes();
   d3.select(bars[j]).attr('fill', 'orange');
   d3.select(bars[j + 1]).attr('fill', 'orange');
   await wait(speed);
 
-  // Swap if out of order and redraw
   if (data[j] > data[j + 1]) {
     [data[j], data[j + 1]] = [data[j + 1], data[j]];
     drawBars();
   }
 
-  // Reset their color
   d3.select(bars[j]).attr('fill', 'rgb(168 219 168)');
   d3.select(bars[j + 1]).attr('fill', 'rgb(168 219 168)');
 
-  // Advance indices for the next comparison
   j++;
   if (j >= data.length - i - 1) {
     j = 0;
@@ -81,7 +76,7 @@ async function play() {
   isPlaying = false;
 }
 
-// Hook up controls once DOM is ready
+// Hook controls on DOM ready
 window.addEventListener('DOMContentLoaded', () => {
   const playBtn     = document.getElementById('play');
   const nextBtn     = document.getElementById('next');
