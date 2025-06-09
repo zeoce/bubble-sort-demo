@@ -6,6 +6,7 @@ let isPlaying = false;
 let speed = 500; // milliseconds
 let i = 0;
 let j = 0;
+let timer = null; // timeout id for autoplay
 
 const svgHeight = 300;
 let svg;
@@ -58,15 +59,23 @@ async function bubbleSortStep() {
   d3.select(bars[j]).attr('fill', 'rgb(168 219 168)');
   d3.select(bars[j + 1]).attr('fill', 'rgb(168 219 168)');
 
-  // Advance indices
-  j++;
-  if (j >= data.length - i - 1) {
-    j = 0;
-    i++;
-  }
-}
-
-// Play loop
+// Autoplay loop using recursive timeouts
+function autoStep() {
+  timer = setTimeout(async () => {
+    if (!isPlaying || i >= data.length - 1) {
+      isPlaying = false;
+      clearTimeout(timer);
+      timer = null;
+      return;
+    }
+    autoStep();
+  }, 0);
+      isPlaying = true;
+      autoStep();
+    if (isPlaying) {
+      clearTimeout(timer);
+      autoStep();
+    }
 async function play() {
   if (isPlaying) return;
   isPlaying = true;
