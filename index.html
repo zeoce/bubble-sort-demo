@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Bubble Sort</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.4/d3.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 class="text-2xl font-bold mb-4 text-center">Interactive Bubble Sort</h1>
+    <div id="chart" class="w-full max-w-3xl mx-auto"></div>
+
+    <div class="mt-6 flex flex-col items-center space-y-4">
+        <div class="flex space-x-4">
+            <button id="play" class="px-4 py-2 bg-green-500 text-white">Play</button>
+            <button id="next" class="px-4 py-2 bg-blue-500 text-white">Next Step</button>
+            <button id="reset" class="px-4 py-2 bg-gray-500 text-white">Reset</button>
+        </div>
+        <div class="flex items-center space-x-2">
+            <label for="speed" class="font-medium">Speed:</label>
+            <input id="speed" type="range" min="100" max="2000" value="500" class="w-60">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
