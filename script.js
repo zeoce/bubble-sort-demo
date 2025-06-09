@@ -43,8 +43,9 @@ async function bubbleSortStep() {
   if (i >= data.length - 1) return; // already sorted
 
   // Highlight compared bars
-  d3.select(svg.children()[j]).attr('fill', 'orange');
-  d3.select(svg.children()[j + 1]).attr('fill', 'orange');
+  const bars = svg.selectAll('rect').nodes();
+  d3.select(bars[j]).attr('fill', 'orange');
+  d3.select(bars[j + 1]).attr('fill', 'orange');
   await wait(speed);
 
   if (data[j] > data[j + 1]) {
@@ -54,9 +55,10 @@ async function bubbleSortStep() {
   }
 
   // Reset colors
-  d3.select(svg.children()[j]).attr('fill', 'rgb(168 219 168)');
-  d3.select(svg.children()[j + 1]).attr('fill', 'rgb(168 219 168)');
+  d3.select(bars[j]).attr('fill', 'rgb(168 219 168)');
+  d3.select(bars[j + 1]).attr('fill', 'rgb(168 219 168)');
 
+  // Advance indices
   j++;
   if (j >= data.length - i - 1) {
     j = 0;
@@ -77,9 +79,9 @@ async function play() {
 
 // Control handlers
 window.addEventListener('DOMContentLoaded', () => {
-  const playBtn = document.getElementById('play');
-  const nextBtn = document.getElementById('next');
-  const resetBtn = document.getElementById('reset');
+  const playBtn    = document.getElementById('play');
+  const nextBtn    = document.getElementById('next');
+  const resetBtn   = document.getElementById('reset');
   const speedSlider = document.getElementById('speed');
 
   playBtn.addEventListener('click', () => {
